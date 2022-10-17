@@ -24,6 +24,10 @@ func init() {
 	}
 }
 
+type Data interface {
+	[]*gitlab.GetCommit | *gitlab.GetCommit | []*gitlab.Tree | *gitlab.File | *gitlab.RFile | ~string
+}
+
 func main() {
 	cli := gitlab.NewClient(oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(&oauth2.Token{AccessToken: string(token())})))
 	r := gin.Default()
@@ -186,6 +190,36 @@ func main() {
 		c.JSON(http.StatusOK, string(file))
 	})
 
+	r.GET("/ql", func(c *gin.Context) {
+		ref := c.Query("ref")
+		data, err := cli.Graphql(c.Query("fullpath"), c.Query("path"), ref)
+		if err != nil {
+			Err(c, err)
+			return
+		}
+		var acts []gitlab.Actions
+		for _, node := range data.GetNodes() {
+			if node.Type == "blob" {
+				acts = append(acts, gitlab.Actions{
+					Action:   "delete",
+					FilePath: node.Path,
+				})
+			}
+
+		}
+
+		commit, err := cli.PostRepoCommit(&gitlab.PostCommit{
+			BaseCommit: gitlab.BaseCommit{Token: "", Id: c.Query("id")}, Branch: ref, Message: "delete base",
+			Actions: acts,
+		})
+		if err != nil {
+			Err(c, err)
+			return
+		}
+
+		Success(c, commit)
+	})
+
 	_ = r.Run(":8080")
 }
 
@@ -196,7 +230,7 @@ func Err(c *gin.Context, err error) {
 	return
 }
 
-func Success(c *gin.Context, data interface{}) {
+func Success[T Data](c *gin.Context, data T) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": data,
 	})

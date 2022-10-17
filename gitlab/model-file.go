@@ -78,7 +78,7 @@ type Files struct {
 type PostFile struct {
 	BaseFile
 	Files
-	Encoding        string `json:"encoding" description:"内容格式,默认text,可选base64" required:"false"`
+	Encoding        string `json:"encoding,omitempty" description:"内容格式,默认text,可选base64" required:"false"`
 	Content         string `json:"content" description:"文件内容" required:"true"`
 	ExecuteFilemode bool   `json:"execute_filemode,omitempty" description:"文件执行flag" required:"false"`
 }

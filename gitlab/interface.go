@@ -1,9 +1,15 @@
 package gitlab
 
+import (
+	"net/http"
+)
+
 type Inter interface {
 	RepoCommit
 	RepoFile
+	Graphql
 	GetTree(*GetTree) ([]*Tree, error)
+	RetCli() *http.Client
 }
 
 type RepoCommit interface {
@@ -19,4 +25,8 @@ type RepoFile interface {
 	PostFile(f *PostFile) (*RFile, error)
 	DeleteFile(f *DeleteFile) error
 	PutFile(f *PutFile) (*RFile, error)
+}
+
+type Graphql interface {
+	Graphql(fullpath, path, ref string) (*RespRepoGraphql, error)
 }

@@ -112,7 +112,7 @@ func (c *Client) PostRepoCommit(f *PostCommit) (*GetCommit, error) {
 		"actions":        f.Actions,
 	}
 
-	bys, err = json.MarshalIndent(body, "", "   ")
+	bys, err = json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}

@@ -66,6 +66,10 @@ func NewClient(c *http.Client) Inter {
 	return &Client{c: c}
 }
 
+func (c *Client) RetCli() *http.Client {
+	return c.c
+}
+
 func (c *Client) request(ctx context.Context, method, u string, heads map[string]string, body io.Reader, values url.Values) (*http.Response, error) {
 	var (
 		err  error
