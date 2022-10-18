@@ -104,20 +104,22 @@ func main() {
 		t := c.GetHeader("PRIVATE-TOKEN")
 		id := c.Query("id")
 
-		path := "demo.zip"
-		err := cli.UploadFile(&gitlab.UploadFile{
+		path := ""
+		do, err := cli.UploadFile(&gitlab.UploadFile{
 			BaseFile: gitlab.BaseFile{Token: t, Id: id}, Typ: ".zip", Sha: "", Path: "",
 		}, path)
 		if err != nil {
 			Err(c, err)
 			return
 		}
-		c.Header("Content-Type", "application/octet-stream")
-		c.Header("Content-Disposition", "attachment; filename="+path)
+		//c.Header("Content-Type", "application/octet-stream")
+		c.Header("Content-Disposition", "attachment; filename=demo.zip")
 		c.Header("Content-Transfer-Encoding", "binary")
-		c.File(path)
+		//c.File(path)
 
-		defer os.Remove(path)
+		c.DataFromReader(http.StatusOK, do.ContentLength, "application/octet-stream", do.Body, nil)
+
+		//defer os.Remove(path)
 
 		//c.JSON(http.StatusOK, "success")
 	})

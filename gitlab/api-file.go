@@ -63,7 +63,7 @@ func (c *Client) GetFile(f *GetFile) (*File, error) {
 }
 
 // UploadFile GET projects/:id/repository/archive[.format]
-func (c *Client) UploadFile(f *UploadFile, upload string) error {
+func (c *Client) UploadFile(f *UploadFile, upload string) (*http.Response, error) {
 	var (
 		do   *http.Response
 		err  error
@@ -91,24 +91,26 @@ func (c *Client) UploadFile(f *UploadFile, upload string) error {
 
 	do, err = c.request(context.Background(), "GET", url, head, nil, u)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if do.StatusCode >= 300 {
-		return errors.New("")
+		return nil, errors.New("")
 	}
 
-	file, err = os.Create(upload)
-	if err != nil {
-		return err
+	if len(upload) != 0 {
+		file, err = os.Create(upload)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = io.Copy(file, do.Body)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	_, err = io.Copy(file, do.Body)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return do, nil
 }
 
 // PostFile POST projects/:id/repository/files/:file_path

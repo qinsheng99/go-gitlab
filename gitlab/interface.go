@@ -21,7 +21,7 @@ type RepoCommit interface {
 type RepoFile interface {
 	GetFile(*GetFile) (*File, error)
 	GetFileRaw(f *GetFile) ([]byte, error)
-	UploadFile(*UploadFile, string) error
+	UploadFile(*UploadFile, string) (*http.Response, error)
 	PostFile(f *PostFile) (*RFile, error)
 	DeleteFile(f *DeleteFile) error
 	PutFile(f *PutFile) (*RFile, error)
