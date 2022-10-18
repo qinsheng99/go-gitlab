@@ -69,9 +69,9 @@ func (c *Client) UploadFile(f *UploadFile, upload string) error {
 		err  error
 		file *os.File
 	)
-	if err = f.validation(); err != nil {
-		return err
-	}
+	//if err = f.validation(); err != nil {
+	//	return err
+	//}
 	url := base + "projects/:id/repository/archive[.format]"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)

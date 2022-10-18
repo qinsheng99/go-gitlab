@@ -117,7 +117,7 @@ func main() {
 		c.Header("Content-Transfer-Encoding", "binary")
 		c.File(path)
 
-		//defer os.Remove(path)
+		defer os.Remove(path)
 
 		//c.JSON(http.StatusOK, "success")
 	})
