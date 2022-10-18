@@ -29,4 +29,5 @@ type RepoFile interface {
 
 type Graphql interface {
 	Graphql(fullpath, path, ref string) (*RespRepoGraphql, error)
+	GetFileSizeForGraphql(fullpath, path, ref string) (*RespFileGraphql, error)
 }
