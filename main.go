@@ -75,7 +75,7 @@ func main() {
 		t := c.GetHeader("PRIVATE-TOKEN")
 		id := c.Query("id")
 		trees, err := cli.GetTree(&gitlab.GetTree{
-			GetFile: gitlab.GetFile{Ref: c.Query("ref"), BaseFile: gitlab.BaseFile{Id: id, Token: t}}, Path: c.Query("path"),
+			GetFile: gitlab.GetFile{Ref: c.Query("ref"), BaseFile: gitlab.BaseFile{Id: id, Token: t}}, Path: c.Query("path"), Recursive: true,
 		})
 		if err != nil {
 			Err(c, err)

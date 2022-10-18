@@ -50,7 +50,9 @@ func (g *GetFile) validation() error {
 
 type GetTree struct {
 	GetFile
-	Path string `description:"目录路径" required:"false"`
+	Path      string `description:"目录路径" required:"false"`
+	Recursive bool   `description:"递归获取" required:"false"`
+	PerPage   int64  `description:"数量" required:"false"`
 }
 
 type UploadFile struct {

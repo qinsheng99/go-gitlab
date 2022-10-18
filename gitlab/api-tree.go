@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	url1 "net/url"
+	"strconv"
 	"strings"
 )
 
@@ -33,6 +34,13 @@ func (c *Client) GetTree(f *GetTree) ([]*Tree, error) {
 	}
 	if len(f.Path) > 0 {
 		u.Add("path", f.Path)
+	}
+	if f.Recursive {
+		u.Add("recursive", "true")
+	}
+
+	if f.PerPage > 0 {
+		u.Add("per_page", strconv.Itoa(int(f.PerPage)))
 	}
 
 	do, err = c.request(context.Background(), "GET", url, head, nil, u)
