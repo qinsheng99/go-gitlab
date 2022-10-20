@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -29,7 +28,7 @@ func (c *Client) Graphql(fullpath, path, ref string) (*RespRepoGraphql, error) {
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +61,7 @@ func (c *Client) GetFileSizeForGraphql(fullpath, path, ref string) (*RespFileGra
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,7 @@ type Inter interface {
 	RepoCommit
 	RepoFile
 	Graphql
+	Project
 	GetTree(*GetTree) ([]*Tree, error)
 	RetCli() *http.Client
 }
@@ -20,14 +21,20 @@ type RepoCommit interface {
 
 type RepoFile interface {
 	GetFile(*GetFile) (*File, error)
-	GetFileRaw(f *GetFile) ([]byte, error)
+	GetFileRaw(*GetFile) ([]byte, error)
 	UploadFile(*UploadFile, string) (*http.Response, error)
-	PostFile(f *PostFile) (*RFile, error)
-	DeleteFile(f *DeleteFile) error
-	PutFile(f *PutFile) (*RFile, error)
+	PostFile(*PostFile) (*RFile, error)
+	DeleteFile(*DeleteFile) error
+	PutFile(*PutFile) (*RFile, error)
 }
 
 type Graphql interface {
-	Graphql(fullpath, path, ref string) (*RespRepoGraphql, error)
-	GetFileSizeForGraphql(fullpath, path, ref string) (*RespFileGraphql, error)
+	Graphql(string, string, string) (*RespRepoGraphql, error)
+	GetFileSizeForGraphql(string, string, string) (*RespFileGraphql, error)
+}
+
+type Project interface {
+	ForkProject(*ForkProjectOption, string) (*ForkProject, error)
+	PutProject(*EditProjectOptions, string) (*ForkProject, error)
+	CreateProject(*CreateProjectOptions) (*ForkProject, error)
 }

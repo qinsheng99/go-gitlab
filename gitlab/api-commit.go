@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -18,7 +16,7 @@ func (c *Client) GetRepoCommit(comm *BaseCommit) ([]*GetCommit, error) {
 		bys  []byte
 		data []*GetCommit
 	)
-	url := base + "projects/:id/repository/commits"
+	url := c.url + "projects/:id/repository/commits"
 
 	url = strings.ReplaceAll(url, ":id", comm.Id)
 
@@ -31,14 +29,10 @@ func (c *Client) GetRepoCommit(comm *BaseCommit) ([]*GetCommit, error) {
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	err = json.Unmarshal(bys, &data)
@@ -57,7 +51,7 @@ func (c *Client) GetOneRepoCommit(comm *CommitOne) (*GetCommit, error) {
 		bys  []byte
 		data GetCommit
 	)
-	url := base + "projects/:id/repository/commits/:sha"
+	url := c.url + "projects/:id/repository/commits/:sha"
 
 	url = strings.ReplaceAll(url, ":id", comm.Id)
 	url = strings.ReplaceAll(url, ":sha", comm.Sha)
@@ -71,14 +65,10 @@ func (c *Client) GetOneRepoCommit(comm *CommitOne) (*GetCommit, error) {
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	err = json.Unmarshal(bys, &data)
@@ -97,7 +87,7 @@ func (c *Client) PostRepoCommit(f *PostCommit) (*GetCommit, error) {
 		err  error
 		do   *http.Response
 	)
-	url := base + "projects/:id/repository/commits"
+	url := c.url + "projects/:id/repository/commits"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 
@@ -122,14 +112,10 @@ func (c *Client) PostRepoCommit(f *PostCommit) (*GetCommit, error) {
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	err = json.Unmarshal(bys, &data)

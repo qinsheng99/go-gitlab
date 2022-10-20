@@ -1,16 +1,20 @@
 package gitlab
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
 type Client struct {
-	c *http.Client
+	c   *http.Client
+	url string
 }
 
 type Token struct {
@@ -56,21 +60,20 @@ func (t *Token) newReq(r *http.Request) *http.Request {
 
 }
 
-const base = "https://gitlab.com/api/v4/"
 const max = 3
 
-func NewClient(c *http.Client) Inter {
+func NewClient(c *http.Client, url string) Inter {
 	if c == nil {
 		c = http.DefaultClient
 	}
-	return &Client{c: c}
+	return &Client{c: c, url: url}
 }
 
 func (c *Client) RetCli() *http.Client {
 	return c.c
 }
 
-func (c *Client) request(ctx context.Context, method, u string, heads map[string]string, body io.Reader, values url.Values) (*http.Response, error) {
+func (c *Client) request(ctx context.Context, method, u string, heads map[string]string, data interface{}, values url.Values) (*http.Response, error) {
 	var (
 		err  error
 		newh *http.Request
@@ -90,21 +93,18 @@ func (c *Client) request(ctx context.Context, method, u string, heads map[string
 		}
 		path.RawQuery = q.Encode()
 	}
-
-	if body != nil {
-		newh, err = http.NewRequestWithContext(ctx, method, path.String(), body)
-	} else {
-		newh, err = http.NewRequestWithContext(ctx, method, path.String(), nil)
-	}
+	newh, err = http.NewRequestWithContext(ctx, method, path.String(), c.body(data))
 	if err != nil {
 		return nil, err
 	}
 
-	if len(heads) > 0 {
+	if len(heads) > 0 || strings.EqualFold(method, "post") {
 		headers := http.Header{}
 		for h, v := range heads {
 			headers.Set(h, v)
 		}
+
+		headers.Set("Content-Type", "application/json")
 
 		newh.Header = headers
 	}
@@ -125,4 +125,37 @@ func (c *Client) request(ctx context.Context, method, u string, heads map[string
 
 	return do, nil
 
+}
+
+func (c *Client) valication(do *http.Response) (bys []byte, err error) {
+	bys, err = ioutil.ReadAll(do.Body)
+
+	if err != nil {
+		return
+	}
+
+	if do.StatusCode >= 300 {
+		err = errors.New(do.Status + string(bys))
+		return
+	}
+	return
+}
+
+func (c *Client) body(data interface{}) io.Reader {
+	var body = io.Reader(nil)
+	switch t := data.(type) {
+	case []byte:
+		body = bytes.NewReader(t)
+	case string:
+		body = strings.NewReader(t)
+	case *strings.Reader:
+		body = t
+	case *bytes.Buffer:
+		body = t
+	case io.Reader:
+		body = t
+	default:
+		body = nil
+	}
+	return body
 }

@@ -8,7 +8,15 @@ import (
 )
 
 type Data interface {
-	[]*gitlab.GetCommit | *gitlab.GetCommit | []*gitlab.Tree | *gitlab.File | *gitlab.RFile | ~string
+	[]*gitlab.GetCommit |
+		*gitlab.GetCommit |
+		[]*gitlab.Tree |
+		*gitlab.File |
+		*gitlab.RFile |
+		~string |
+		gitlab.ForkProjectOption |
+		int |
+		[]map[string]interface{}
 }
 
 func Err(c *gin.Context, err error) {

@@ -3,8 +3,6 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"net/http"
 	url1 "net/url"
 	"strconv"
@@ -19,7 +17,7 @@ func (c *Client) GetTree(f *GetTree) ([]*Tree, error) {
 		bys  []byte
 		data []*Tree
 	)
-	url := base + "projects/:id/repository/tree"
+	url := c.url + "projects/:id/repository/tree"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 
@@ -48,14 +46,10 @@ func (c *Client) GetTree(f *GetTree) ([]*Tree, error) {
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	err = json.Unmarshal(bys, &data)

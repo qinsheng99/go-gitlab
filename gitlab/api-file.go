@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	url1 "net/url"
 	"os"
@@ -25,7 +24,7 @@ func (c *Client) GetFile(f *GetFile) (*File, error) {
 	if err = f.validation(); err != nil {
 		return nil, err
 	}
-	url := base + "projects/:id/repository/files/:file_path"
+	url := c.url + "projects/:id/repository/files/:file_path"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 	url = strings.ReplaceAll(url, ":file_path", f.File)
@@ -44,14 +43,10 @@ func (c *Client) GetFile(f *GetFile) (*File, error) {
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	err = json.Unmarshal(bys, &data)
@@ -72,7 +67,7 @@ func (c *Client) UploadFile(f *UploadFile, upload string) (*http.Response, error
 	//if err = f.validation(); err != nil {
 	//	return err
 	//}
-	url := base + "projects/:id/repository/archive[.format]"
+	url := c.url + "projects/:id/repository/archive[.format]"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 	url = strings.ReplaceAll(url, "[.format]", f.Typ)
@@ -124,7 +119,7 @@ func (c *Client) PostFile(f *PostFile) (_ *RFile, _ error) {
 	if err = f.validation(); err != nil {
 		return nil, err
 	}
-	url := base + "projects/:id/repository/files/:file_path"
+	url := c.url + "projects/:id/repository/files/:file_path"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 	url = strings.ReplaceAll(url, ":file_path", f.File)
@@ -142,14 +137,10 @@ func (c *Client) PostFile(f *PostFile) (_ *RFile, _ error) {
 
 	do, err = c.request(context.Background(), "POST", url, head, bytes.NewReader(bys), nil)
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	_ = json.Unmarshal(bys, &data)
@@ -167,7 +158,7 @@ func (c *Client) DeleteFile(f *DeleteFile) error {
 	if err = f.validation(); err != nil {
 		return err
 	}
-	url := base + "projects/:id/repository/files/:file_path"
+	url := c.url + "projects/:id/repository/files/:file_path"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 	url = strings.ReplaceAll(url, ":file_path", f.File)
@@ -184,14 +175,10 @@ func (c *Client) DeleteFile(f *DeleteFile) error {
 
 	do, err = c.request(context.Background(), "DELETE", url, head, bytes.NewReader(bys), nil)
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return err
-	}
-
-	if do.StatusCode >= 300 {
-		return errors.New(do.Status + string(bys))
 	}
 
 	fmt.Println(string(bys))
@@ -210,7 +197,7 @@ func (c *Client) PutFile(f *PutFile) (*RFile, error) {
 	if err = f.validation(); err != nil {
 		return nil, err
 	}
-	url := base + "projects/:id/repository/files/:file_path"
+	url := c.url + "projects/:id/repository/files/:file_path"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 	url = strings.ReplaceAll(url, ":file_path", f.File)
@@ -226,14 +213,10 @@ func (c *Client) PutFile(f *PutFile) (*RFile, error) {
 
 	do, err = c.request(context.Background(), "PUT", url, head, bytes.NewReader(bys), nil)
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	_ = json.Unmarshal(bys, &data)
@@ -251,7 +234,7 @@ func (c *Client) GetFileRaw(f *GetFile) ([]byte, error) {
 	if err = f.validation(); err != nil {
 		return nil, err
 	}
-	url := base + "projects/:id/repository/files/:file_path/raw"
+	url := c.url + "projects/:id/repository/files/:file_path/raw"
 
 	url = strings.ReplaceAll(url, ":id", f.Id)
 	url = strings.ReplaceAll(url, ":file_path", f.File)
@@ -270,14 +253,10 @@ func (c *Client) GetFileRaw(f *GetFile) ([]byte, error) {
 		return nil, err
 	}
 
-	bys, err = ioutil.ReadAll(do.Body)
+	bys, err = c.valication(do)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if do.StatusCode >= 300 {
-		return nil, errors.New(do.Status + string(bys))
 	}
 
 	return bys, nil

@@ -24,7 +24,7 @@ func init() {
 }
 
 func main() {
-	cli := gitlab.NewClient(oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(&oauth2.Token{AccessToken: string(token())})))
+	cli := gitlab.NewClient(oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(&oauth2.Token{AccessToken: string(token())})), "https://gitlab.com/api/v4/")
 	r := gin.Default()
 
 	route.Route(r, cli)
