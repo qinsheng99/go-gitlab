@@ -9,6 +9,7 @@ import (
 func Route(r *gin.Engine, cli gitlab.Inter) {
 	base := controller.NewBase(cli)
 	func(b *controller.Base) {
+		r.UseRawPath = true
 		r.GET("/get-commit", b.GetCommit)
 		r.POST("/post-commit", b.PostCommit)
 
