@@ -2,6 +2,8 @@ package gitlab
 
 import (
 	"net/http"
+
+	"github.com/hashicorp/go-retryablehttp"
 )
 
 type Inter interface {
@@ -10,7 +12,7 @@ type Inter interface {
 	Graphql
 	Project
 	GetTree(*GetTree) ([]*Tree, error)
-	RetCli() *http.Client
+	RetCli() *retryablehttp.Client
 }
 
 type RepoCommit interface {

@@ -16,7 +16,8 @@ type Data interface {
 		~string |
 		gitlab.ForkProjectOption |
 		int |
-		[]map[string]interface{}
+		[]map[string]interface{} |
+		*gitlab.RespRepoGraphql
 }
 
 func Err(c *gin.Context, err error) {

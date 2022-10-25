@@ -10,10 +10,12 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
 )
 
 type Client struct {
-	c   *http.Client
+	c   *retryablehttp.Client
 	url string
 }
 
@@ -66,17 +68,19 @@ func NewClient(c *http.Client, url string) Inter {
 	if c == nil {
 		c = http.DefaultClient
 	}
-	return &Client{c: c, url: url}
+	r := retryablehttp.NewClient()
+	r.HTTPClient = c
+	return &Client{c: r, url: url}
 }
 
-func (c *Client) RetCli() *http.Client {
+func (c *Client) RetCli() *retryablehttp.Client {
 	return c.c
 }
 
 func (c *Client) request(ctx context.Context, method, u string, heads map[string]string, data interface{}, values url.Values) (*http.Response, error) {
 	var (
 		err  error
-		newh *http.Request
+		newh *retryablehttp.Request
 		do   *http.Response
 		path *url.URL
 	)
@@ -93,7 +97,8 @@ func (c *Client) request(ctx context.Context, method, u string, heads map[string
 		}
 		path.RawQuery = q.Encode()
 	}
-	newh, err = http.NewRequestWithContext(ctx, method, path.String(), c.body(data))
+
+	newh, err = retryablehttp.NewRequest(method, path.String(), c.body(data))
 	if err != nil {
 		return nil, err
 	}

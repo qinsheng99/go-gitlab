@@ -16,9 +16,23 @@ func (c *Client) Graphql(fullpath, path, ref string) (*RespRepoGraphql, error) {
 	)
 	body := `
 	{
-		"query":"query {project(fullPath: \"%s\") {repository {tree(ref: \"%s\", recursive: true, path: \"%s\") {blobs {nodes {name path type}}}}}}"
+		"query":"query {
+					project(fullPath: \"%s\") {
+						repository {
+							tree(ref: \"%s\", recursive: true, path: \"%s\") {
+								blobs {
+									nodes {
+										name path type
+									}
+								}
+							}
+						}
+					}
+				}"
 	}
 `
+	body = strings.ReplaceAll(body, "\n", "")
+	body = strings.ReplaceAll(body, "\t", "")
 	head := map[string]string{
 		//"PRIVATE-TOKEN": f.Token,
 		"Content-Type": "application/json",
