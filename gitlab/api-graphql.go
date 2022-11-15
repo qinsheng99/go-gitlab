@@ -31,6 +31,22 @@ func (c *Client) Graphql(fullpath, path, ref string) (*RespRepoGraphql, error) {
 				}"
 	}
 `
+	//	// 获取文件大小
+	//	body = `
+	//	{
+	//		"query":"query {
+	//					project(fullPath: \"%s\") {
+	//						repository {
+	//							blobs(ref:\"%s\", paths: [\"%s\"]) {
+	//								nodes{
+	//									rawSize name path
+	//								}
+	//							}
+	//						}
+	//					}
+	//			}"
+	//	}
+	//`
 	body = strings.ReplaceAll(body, "\n", "")
 	body = strings.ReplaceAll(body, "\t", "")
 	head := map[string]string{

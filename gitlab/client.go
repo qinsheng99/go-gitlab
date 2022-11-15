@@ -70,6 +70,7 @@ func NewClient(c *http.Client, url string) Inter {
 	}
 	r := retryablehttp.NewClient()
 	r.HTTPClient = c
+	r.Logger = nil
 	return &Client{c: r, url: url}
 }
 
