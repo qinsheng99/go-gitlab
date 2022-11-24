@@ -53,6 +53,7 @@ type GetTree struct {
 	Path      string `description:"目录路径" required:"false"`
 	Recursive bool   `description:"递归获取" required:"false"`
 	PerPage   int64  `description:"数量" required:"false"`
+	Page      int64  `description:"页数" required:"false"`
 }
 
 type UploadFile struct {

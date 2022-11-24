@@ -41,6 +41,10 @@ func (c *Client) GetTree(f *GetTree) ([]*Tree, error) {
 		u.Add("per_page", strconv.Itoa(int(f.PerPage)))
 	}
 
+	if f.Page > 0 {
+		u.Add("page", strconv.Itoa(int(f.PerPage)))
+	}
+
 	do, err = c.request(context.Background(), "GET", url, head, nil, u)
 	if err != nil {
 		return nil, err
